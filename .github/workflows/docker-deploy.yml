@@ -1,0 +1,35 @@
+# Workflow deploying the app to GHCR
+
+name: Docker Deploy
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Node 12.x
+      uses: actions/setup-node@v1
+    - uses: actions/cache@v2
+      with:
+        path: '**/node_modules'
+        key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+    - name: Install & Build
+      run: |
+        yarn install
+        yarn run build
+    - name: Build Docker image
+      run: |
+        docker build . --file Dockerfile -t ghcr.io/marcauberer/pupil-pick:latest
+        echo "Build completed"
+        echo ${CR_PAT} | docker login ghcr.io -u ${GITHUB_REPOSITORY_OWNER} --password-stdin
+        echo "Login successful"
+        docker push ghcr.io/marcauberer/pupil-pick:latest
+        echo "Push successful"
+      env:
+        CR_PAT: ${{ secrets.CR_PAT }}
