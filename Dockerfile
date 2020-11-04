@@ -4,7 +4,7 @@ FROM node:12-alpine
 # Create and cd into /usr/src/app
 WORKDIR /usr/src/app
 
-# Copy build output to workdir
+# Copy repo (except of the files listed in .dockerignore) to the workdir
 COPY . ./
 
 # Install dependencies

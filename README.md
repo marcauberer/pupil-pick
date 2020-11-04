@@ -1,5 +1,5 @@
 # Pupil-Pick
-Building an application using Node.js, TypeScript and Express.js and deploy it with Docker.
+Building an application using Node.js, TypeScript and Express.js and deploying it with Docker.
 
 Download the presentation for Node.js, TypeScript and Express [here](https://github.com/Ordinateur-Hack/pupil-pick/raw/master/Node.js%20Pupil%20Pick%20compressed.pptx).<br>
 Download the presentation for Docker [here](https://github.com/marcauberer/pupil-pick/raw/master/Docker%20Pupil%20Pick%20compressed.pptx).
