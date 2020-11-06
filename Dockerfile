@@ -1,5 +1,5 @@
 # Create image from node base image
-FROM node:12-alpine
+FROM arm32v7/node:12-alpine
 
 # Create and cd into /usr/src/app
 WORKDIR /usr/src/app
