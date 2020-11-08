@@ -3,12 +3,20 @@ import fs from 'fs';
 import path from 'path';
 // Here we import our function getRandomInt from our own file src/util.ts
 import { getRandomInt } from './util';
+import * as mysql from 'mysql';
+
+// Connect to mysql database
+const connection = mysql.createConnection({
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE
+})
+connection.connect();
 
 // Here you'll find a "Hello World" application in Express.js:
 // http://expressjs.com/de/starter/hello-world.html
 const app = express();
-
-const NAMES_LIST_PATH = './src/NamesList.txt';
 
 // Serve public folder
 app.use(express.static(path.resolve('public')));
@@ -33,26 +41,16 @@ app.get('/rand', (req, res) => {
 
 // Get a random pupil
 app.get('/randomPupil', (req, res) => {
-    const pupil = getRandomPupil();
-    res.send({
-        name: pupil?.toString()
-    });
+    connection.query(
+        'SELECT first_name, last_name FROM pupil ORDER BY RAND() * probability DESC LIMIT 1',
+        function (error, results, fields) {
+        if (error) throw error;
+        const pupil = results[0];
+        res.send({
+            name: pupil.first_name + " " + pupil.last_name
+        });
+    })
 });
-
-function getRandomPupil(): string | undefined {
-    try {
-        // Read the file synchronously and split on line breaks.
-        const namesFile = fs.readFileSync(NAMES_LIST_PATH, 'utf-8');
-        const names: string[] = namesFile.split(/\r?\n/);
-
-        // Get a random element from the array of names
-        const randIndex = getRandomInt(names.length);
-        return names[randIndex];
-    }
-    catch {
-        return; // no special handling in our case
-    }
-}
 
 // Serve all other GET routes, '*' is used as wildcard here
 // Note that it is important that you put this app.get('*')
