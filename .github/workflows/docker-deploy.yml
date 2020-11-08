@@ -14,22 +14,16 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-    - name: Node 12.x
-      uses: actions/setup-node@v1
-    - name: Load dependencies from cache
-      uses: actions/cache@v2
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
       with:
-        path: '**/node_modules'
-        key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-    - name: Install & Build
-      run: |
-        yarn install
-        yarn run build
+        platforms: all
+    - name: Set up Docker Buildx
+      id: buildx
+      uses: docker/setup-buildx-action@v1
     - name: Build Docker image
       run: |
-        docker buildx build . --file Dockerfile --platform "linux/arm/v7" --tag ghcr.io/marcauberer/pupil-pick:latest --output type=image,push=false
+        docker buildx build . --file=Dockerfile --platform=linux/arm/v7 --tag=ghcr.io/marcauberer/pupil-pick:latest --load
         echo "Build completed"
         docker image ls
     - name: Push Docker image
