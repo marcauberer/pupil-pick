@@ -1,0 +1,28 @@
+# Workflow deploying the app to GH Packages
+
+name: Docker Deploy AMD64
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore: [ 'README.md', 'node_modules/**', '**.pptx' ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Build Docker image
+      run: |
+        docker build . --file=Dockerfile-AMD64 --tag=docker.pkg.github.com/marcauberer/pupil-pick/pupil-pick-amd64:latest
+        echo "Build completed"
+    - name: Push Docker image
+      run: |
+        echo ${CR_PAT} | docker login docker.pkg.github.com -u ${GITHUB_REPOSITORY_OWNER} --password-stdin
+        echo "Login successful"
+        docker push docker.pkg.github.com/marcauberer/pupil-pick/pupil-pick-amd64:latest
+        echo "Push successful"
+      env:
+        CR_PAT: ${{ secrets.CR_PAT }}
