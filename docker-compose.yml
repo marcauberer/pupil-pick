@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # Node server / Frontend
+  frontend:
+    image: docker.pkg.github.com/marcauberer/pupil-pick/pupil-pick-armv7:latest
+    networks:
+      - pupil-pick
+    environment:
+      MYSQL_HOST: database
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 9jpYEDuz6ThfQ7C3
+      MYSQL_DATABASE: pupil-pick
+    depends_on:
+      - database
+    ports:
+      - 80:8080
+
+  # MySQL Database
+  database:
+    image: 'hypriot/rpi-mysql:latest'
+    volumes:
+      - /root/pupil-pick/mysql:/var/lib/mysql
+    networks:
+      - pupil-pick
+    environment:
+      MYSQL_ROOT_PASSWORD: 9jpYEDuz6ThfQ7C3
+      MYSQL_DATABASE: pupil-pick
+
+  # PhpMyAdmin
+  phpmyadmin:
+    image: 'phpmyadmin:latest'
+    networks:
+      - pupil-pick
+    environment:
+      PMA_HOST: database
+    ports:
+      - 8080:80
+
+networks:
+  pupil-pick:
+    ipam:
+      driver: default
